@@ -1,0 +1,80 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ listing.title }}
+{% endblock %}
+
+{% block body %}
+    <h2>{{ listing.title }}</h2>
+    {% if user.is_authenticated %}
+        {% if active %}
+            {% if poster %}
+                <div>
+                    <a href="{% url 'close' listing.id %}" style="color: red">Close Auction</a>
+                </div>
+            {% endif %}
+            {% if message %}
+                <a href="{% url 'unwatch' listing.id %}" style="font-size: 14px;">{{ message }}</a>
+            {% else %}
+                <a href="{% url 'watch' listing.id %}" style="font-size: 14px;">Add to Watchlist!</a>
+            {% endif %}
+        {% else %}
+            Auction is closed.
+            {% if listing.winner %}
+                <p><b>You have won this auction!</b></p>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    <h6 style="margin-top: 20px">Starting Bid: ${{ listing.starting }}</h6>
+    {% if active %}
+        <h5>Current Bid: 
+            {% if listing.current %}
+                ${{ listing.current }}
+            {% else %}
+                None
+            {% endif %}</h5>
+        {% if user.is_authenticated %}
+            {% if message_fail1 %}
+                {{ message_fail1 }}
+            {% elif message_fail2 %}
+                {{ message_fail2 }}
+            {% elif message_success %}
+                {{ message_success }}
+            {% endif %}
+            <form action="{% url 'bid' listing.id %}" method="POST">
+                {% csrf_token %}
+                <input type="number" name="bidding" min="0" max="9999.99" value="0" step=".01" required>
+                <input type="submit" value="BID">
+            </form>
+        {% endif %}
+    {% else %}
+        <h5>Ending Bid: 
+            {% if listing.current %}
+                ${{ listing.current }}
+            {% else %}
+                None
+            {% endif %}</h5> 
+    {% endif %}
+    <p style="margin-top: 10px;"><b>Description:</b> {{ listing.description }}</p>
+    {% if listing.photo %}
+        <img src="{{ listing.photo }}" height="400px">
+    {% endif %}
+
+    <h4 style="margin-top: 40px; border-bottom: solid black; width: 80%">COMMENTS:</h4>
+    {% if user.is_authenticated %}
+        <div style="border-bottom: solid 1px darkslategrey; padding-bottom: 20px; width: 80%">
+            <h5>Write a Comment!</h5>
+            <form action="{% url 'comment' listing.id %}" method="POST">
+                {% csrf_token %}
+                <textarea name="comment" maxlength="300" rows="3" cols="100"></textarea>
+                <div><input type="submit" value="Comment"></div>
+            </form>
+        </div>
+    {% endif %}
+    {% for comment in comments %}
+        <div style="border: solid 1px gray; width: 80%">
+            <p><b>{{ comment.user }}:</b></p>
+            <p>{{ comment.comment }}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

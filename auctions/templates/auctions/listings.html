@@ -1,0 +1,31 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Your Listings
+{% endblock %}
+
+{% block body %}
+    <h2 style="margin-bottom: 30px; margin-left: 10px">Your Listings</h2>
+    {% for listing in listings %}
+        <a href="{% url 'item' listing.id %}" style="color: darkslategrey"><div style="margin: 10px; border: solid; border-width: 1px; overflow: hidden; padding: 5px">
+            {%if listing.photo%}
+                <img src="{{listing.photo}}" alt="photo" height="200px" ALIGN="right">
+            {%endif%}
+        <h3>{{listing.title}}</h3>
+        {% if listing.running %}
+            <h6>Current price: 
+                {% if listing.current == None %}
+                    ${{listing.starting}}
+                {% else %}
+                    ${{listing.current}}
+                {% endif %}
+            </h6>
+        {% else %}
+            <h6>Sold</h6>
+        {% endif %}
+        <p><b>Description:</b> {{listing.description}}</p>
+        </div></a>
+        {% empty %}
+            You have not listed any items.
+    {% endfor %}
+{% endblock %}
