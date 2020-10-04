@@ -1,2 +1,2 @@
 # auction-website
-Similar to ebay
+Similar to ebay. Uses Django and SQL to create a functioning website with account registration, bidding, posting, adding to watchlist, etc.
